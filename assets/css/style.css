@@ -10,7 +10,7 @@
 
 body {
   margin: 0;
-  font-family: "Georgia", "Songti SC", "Noto Serif TC", serif;
+  font-family: "Source Serif 4", "Songti SC", "Noto Serif TC", Georgia, serif;
   color: var(--ink);
   background: var(--bg);
   line-height: 1.6;
@@ -24,7 +24,8 @@ header {
 
 header h1 {
   margin: 0 0 0.25rem;
-  font-size: 2rem;
+  font-size: 2.1rem;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 
