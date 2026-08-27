@@ -63,17 +63,23 @@ main {
 
 section {
   padding: 2rem 0;
-  border-bottom: 1px solid var(--line);
-}
-
-section:last-child {
-  border-bottom: none;
 }
 
 section h2 {
   font-size: 1.25rem;
   margin-bottom: 0.75rem;
   color: var(--accent);
+}
+
+section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem;
+  color: var(--ink);
+}
+
+section h3:first-of-type {
+  margin-top: 0;
 }
 
 .figure-grid {
@@ -96,4 +102,175 @@ footer {
 
 a {
   color: var(--accent);
+}
+
+/* =========================================================================
+   Interactive visual layer
+   -------------------------------------------------------------------------
+   Everything below is additive. No font, size, weight, color, spacing,
+   content width, navbar or heading style above is changed by it. Each
+   scroll-driven property is written so that its resting value — and its
+   value with JavaScript disabled — is exactly the appearance the site had
+   before this layer existed. New elements draw only in neutral gray, taken
+   as low-opacity versions of --ink; no new accent color is introduced.
+
+   Layer order: particles (-1) < page content (1) < side graphic (2).
+   ========================================================================= */
+
+header,
+nav,
+main,
+footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Section heading reveal -------------------------------------------
+   Bound to scroll position, not played as a timed animation. --p runs
+   0 → 1 as the heading crosses the lower part of the viewport; at --p: 1
+   the heading is byte-for-byte its original self, accent color included. */
+section h2 {
+  opacity: calc(0.55 + 0.45 * var(--p, 1));
+  transform: translateY(calc((1 - var(--p, 1)) * 8px));
+  will-change: opacity, transform;
+}
+
+/* --- Divider drawing ---------------------------------------------------
+   Replaces the former border-bottom with a line of identical color,
+   thickness and position, revealed left-to-right by scroll distance
+   rather than appearing all at once. */
+section {
+  position: relative;
+}
+
+/* The transparent border keeps each section's box exactly the height it
+   had when the divider was a real border-bottom, so no spacing shifts. */
+section:not(:last-child) {
+  border-bottom: 1px solid transparent;
+}
+
+section:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3.5px;
+  height: 6px;
+  background:
+    radial-gradient(circle 2.5px at 2.5px 50%, rgba(26, 26, 26, 0.22) 98%, transparent 100%) no-repeat,
+    radial-gradient(circle 2.5px at calc(100% - 2.5px) 50%, rgba(26, 26, 26, 0.22) 98%, transparent 100%) no-repeat,
+    linear-gradient(var(--line), var(--line)) no-repeat center / 100% 1px;
+  /* Revealed by clipping rather than scaling, so the end dots never squash. */
+  clip-path: inset(0 calc((1 - var(--d, 1)) * 100%) 0 0);
+}
+
+/* --- Side fill graphic -------------------------------------------------
+   Large, quiet, and cropped by the right edge of the viewport on purpose.
+   Sized in viewport units so the crop holds at any window width. */
+/* Left edge is pinned just outside the 720px content column, so the panel
+   can be wide and still never sit behind body text at any window size;
+   the right edge deliberately runs past the viewport and is cropped. */
+#side-graphic {
+  position: fixed;
+  top: 0;
+  left: calc(50% + 366px);
+  right: -10vw;
+  height: 100vh;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+}
+
+#side-graphic path,
+#side-graphic circle,
+#side-graphic rect {
+  vector-effect: non-scaling-stroke;
+  stroke-width: 1;
+}
+
+/* Lines — one fixed appearance, drawn once. The page background shows
+   through everywhere: no surface fill, only wireframe. Nodes below are the
+   only thing that responds to scroll. */
+#side-graphic .sg-edges path {
+  fill: none;
+  stroke: rgba(26, 26, 26, 0.26);
+}
+
+#side-graphic .sg-hull path {
+  fill: none;
+  stroke: rgba(26, 26, 26, 0.16);
+  stroke-dasharray: 3 4;
+}
+
+#side-graphic .sg-handles rect {
+  fill: var(--bg);
+  stroke: rgba(26, 26, 26, 0.28);
+}
+
+/* Nodes, hollow: the resting state above the fill boundary. */
+#sg-nodes-hollow .hollow {
+  fill: var(--bg);
+  stroke: rgba(26, 26, 26, 0.32);
+}
+
+#sg-nodes-hollow .solid {
+  fill: var(--bg);
+  stroke: rgba(26, 26, 26, 0.32);
+}
+
+/* Nodes, filled: revealed from the bottom as the page is scrolled. Most go
+   gray; a scattered share take the heading colour already in the palette. */
+#sg-nodes-filled .hollow,
+#sg-nodes-filled .solid {
+  fill: rgba(26, 26, 26, 0.42);
+  stroke: rgba(26, 26, 26, 0.5);
+}
+
+#sg-nodes-filled .accent {
+  fill: rgba(139, 47, 47, 0.62);
+  stroke: rgba(139, 47, 47, 0.72);
+}
+
+/* --- Background particle field ----------------------------------------- */
+#bg-particles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  #side-graphic {
+    display: none;
+  }
+
+  section h2 {
+    transform: translateY(calc((1 - var(--p, 1)) * 5px));
+  }
+}
+
+/* --- Reduced motion -----------------------------------------------------
+   Movement stops; nothing is hidden that carried meaning. Headings and
+   dividers resolve to their final state, the side graphic keeps a static
+   fill matching the current scroll position, and the particle canvas is
+   removed by the script rather than merely paused. */
+@media (prefers-reduced-motion: reduce) {
+  section h2 {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  section:not(:last-child)::after {
+    clip-path: none;
+  }
+
+  #side-graphic {
+    will-change: auto;
+  }
+
+  #bg-particles {
+    display: none;
+  }
 }
