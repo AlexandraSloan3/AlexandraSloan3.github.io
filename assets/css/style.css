@@ -166,8 +166,7 @@ section:not(:last-child)::after {
 
 /* --- Side fill graphic -------------------------------------------------
    Large, quiet, and cropped by the right edge of the viewport on purpose.
-   Sized in viewport units so the crop holds at any window width. */
-/* Left edge is pinned just outside the 720px content column, so the panel
+   Left edge is pinned just outside the 720px content column, so the panel
    can be wide and still never sit behind body text at any window size;
    the right edge deliberately runs past the viewport and is cropped. */
 #side-graphic {
