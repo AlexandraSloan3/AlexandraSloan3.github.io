@@ -169,15 +169,32 @@ section:not(:last-child)::after {
    Left edge is pinned just outside the 720px content column, so the panel
    can be wide and still never sit behind body text at any window size;
    the right edge deliberately runs past the viewport and is cropped. */
+/* Width must be stated explicitly: an SVG carries an intrinsic aspect ratio,
+   so with width:auto the browser derives it from the height and ignores
+   `right` entirely. Because preserveAspectRatio is `slice`, a wider box also
+   scales the drawing up, which is what makes the pattern itself larger. */
 #side-graphic {
   position: fixed;
   top: 0;
-  left: calc(50% + 366px);
-  right: -10vw;
+  /* Widening happens by moving this edge left, not by growing the box:
+     because preserveAspectRatio is `slice`, the box width sets the drawing's
+     scale, so changing it would alter the mesh density. Keeping width fixed
+     and shifting `left` simply reveals more of the drawing at the same size.
+     The graphic sits below the content layer, and the mask has faded it to
+     nothing well before the text column, so the overlap is never visible. */
+  left: calc(50% + 300px);
+  /* Capped at 0.9 x the 780-unit canvas. Staying at or below that keeps the
+     `slice` scale pinned to the height (900/1000 = 0.9), so the mesh renders
+     at a constant density at every window width instead of growing with it. */
+  width: min(46vw, 702px);
   height: 100vh;
-  z-index: 2;
+  z-index: 0;
   pointer-events: none;
   will-change: transform;
+  /* Left edge dissolves into the page. Measured against the element box, so
+     it stays the same on-screen distance no matter how the drawing scales. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 14%, #000 30%);
+  mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 14%, #000 30%);
 }
 
 #side-graphic path,
