@@ -76,17 +76,6 @@ section h2 {
   color: var(--accent);
 }
 
-section h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 1.25rem 0 0.5rem;
-  color: var(--ink);
-}
-
-section h3:first-of-type {
-  margin-top: 0;
-}
-
 .figure-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
