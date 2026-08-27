@@ -14,13 +14,15 @@
 <canvas id="bg-particles" aria-hidden="true"></canvas>
 
 <!--
-  Side fill graphic. Deliberately larger than the space available: it is
-  positioned so that roughly a quarter of it sits past the right edge of the
-  viewport and is cropped. Two identical copies of the same irregular network
-  are drawn — a hollow outline, and a filled version clipped by a rectangle
-  whose top edge rises from the bottom as the page is scrolled. Because the
-  clip is a continuous boundary rather than a per-node toggle, a node the
-  boundary happens to intersect is filled only up to that line.
+  Side graphic. Deliberately wider than the space available, so part of it
+  runs past the right edge and is cropped, while the left edge dissolves into
+  the page through sg-edge-mask.
+
+  The lines are drawn once and never change. Only the nodes react to scroll:
+  they appear twice, hollow and filled, and sg-fill-mask reveals the filled
+  copy from the bottom upward as the page is scrolled. Because that mask is a
+  continuous gradient rather than a per-node toggle, a node the boundary
+  happens to cross is filled only up to that line.
 -->
 <svg id="side-graphic" viewBox="0 0 560 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
   <defs>
