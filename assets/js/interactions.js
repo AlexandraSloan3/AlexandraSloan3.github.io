@@ -176,7 +176,60 @@
   }
 
   /* =====================================================================
-   * 4. Particle field
+   * 4. Section entrance — each card rises into place once
+   *
+   * The hidden state lives behind .js-reveal on <html>, so it only ever
+   * exists while this script is running and able to undo it; with
+   * JavaScript off, every section is simply visible. Sections already on
+   * screen at load are released immediately and without transition, so the
+   * first paint is the finished page rather than an empty one filling in.
+   * =================================================================== */
+  (function sectionReveal() {
+    if (!sections.length) return;
+    // CSS already resolves these to their final state under reduced motion.
+    if (reduceMotion || typeof IntersectionObserver !== "function") return;
+
+    document.documentElement.classList.add("js-reveal");
+
+    var vhNow = window.innerHeight;
+    var settled = [];
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].getBoundingClientRect().top < vhNow * 0.92) {
+        sections[i].style.transition = "none";
+        sections[i].classList.add("is-in");
+        settled.push(sections[i]);
+      }
+    }
+    if (settled.length) {
+      // Two frames: one for the browser to paint the settled state, one to
+      // hand the transition back before any hover or resize can use it.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          for (var j = 0; j < settled.length; j++) {
+            settled[j].style.transition = "";
+          }
+        });
+      });
+    }
+
+    var io = new IntersectionObserver(
+      function (entries) {
+        for (var k = 0; k < entries.length; k++) {
+          if (!entries[k].isIntersecting) continue;
+          entries[k].target.classList.add("is-in");
+          io.unobserve(entries[k].target); // one-way; never re-hides on scroll up
+        }
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.08 }
+    );
+
+    for (var m = 0; m < sections.length; m++) {
+      if (!sections[m].classList.contains("is-in")) io.observe(sections[m]);
+    }
+  })();
+
+  /* =====================================================================
+   * 5. Particle field
    * =================================================================== */
   (function particles() {
     var canvas = document.getElementById("bg-particles");
@@ -194,7 +247,7 @@
     var queued = false;
     var pointer = { x: -9999, y: -9999, active: false };
 
-    var INK = "26, 26, 26"; // --ink, used only at very low opacity
+    var INK = "64, 70, 76"; // --mesh-rgb, used only at very low opacity
 
     function isMobile() {
       return mqMobile.matches;
