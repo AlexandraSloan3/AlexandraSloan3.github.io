@@ -229,7 +229,78 @@
   })();
 
   /* =====================================================================
-   * 5. Particle field
+   * 5. Research Log — show the newest three, fold the rest
+   *
+   * The entries themselves are built by Jekyll from the Markdown files in
+   * _logs/; this only decides how many of them are on screen. The markup
+   * arrives fully expanded with the toggle hidden, so a reader without
+   * JavaScript sees every entry and no button that does nothing. Collapsing
+   * is therefore the first thing done here, not the resting state of the
+   * document.
+   *
+   * Height is animated rather than max-height: the content's real height is
+   * measured each time, so the transition takes the same 250ms whether the
+   * fold hides one short entry or forty long ones, instead of stalling on a
+   * max-height guess that overshoots.
+   * =================================================================== */
+  (function researchLog() {
+    var more = document.getElementById("log-more");
+    var btn = document.getElementById("log-toggle");
+    if (!more || !btn) return;
+
+    var LABEL_MORE = "View all research logs ↓";
+    var LABEL_LESS = "Show less ↑";
+    var DURATION = 250;
+
+    var open = false;
+    var timer = null;
+
+    more.style.height = "0px";
+    btn.hidden = false;
+    btn.textContent = LABEL_MORE;
+    btn.setAttribute("aria-expanded", "false");
+
+    function animate(from, to, done) {
+      clearTimeout(timer);
+      if (reduceMotion) {
+        more.style.transition = "";
+        more.style.height = to;
+        if (done) done();
+        return;
+      }
+      more.style.transition = "";
+      more.style.height = from;
+      void more.offsetHeight; // commit the start value before transitioning
+      more.style.transition = "height " + DURATION + "ms cubic-bezier(0.4, 0, 0.2, 1)";
+      more.style.height = to;
+      timer = setTimeout(function () {
+        more.style.transition = "";
+        if (done) done();
+      }, DURATION + 40);
+    }
+
+    btn.addEventListener("click", function () {
+      var measured = more.scrollHeight + "px";
+      if (open) {
+        open = false;
+        btn.textContent = LABEL_MORE;
+        btn.setAttribute("aria-expanded", "false");
+        animate(measured, "0px");
+      } else {
+        open = true;
+        btn.textContent = LABEL_LESS;
+        btn.setAttribute("aria-expanded", "true");
+        animate("0px", measured, function () {
+          // Released to auto once open, so the panel keeps fitting its
+          // content through a resize, a font swap or a zoom change.
+          if (open) more.style.height = "auto";
+        });
+      }
+    });
+  })();
+
+  /* =====================================================================
+   * 6. Particle field
    * =================================================================== */
   (function particles() {
     var canvas = document.getElementById("bg-particles");
