@@ -1,3 +1,9 @@
+---
+# Deliberately empty. Its presence is what tells GitHub Pages to run
+# this file through Jekyll, which is what fills the Research Log section
+# from the Markdown files in _logs/. Removing these three lines would
+# leave the log section blank.
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2829,9 +2835,46 @@
     <p><!-- TODO: embed or link presentation deck once created --></p>
   </section>
 
+  <!--
+    Research Log. The entries are not written here — they are the Markdown
+    files in _logs/, which GitHub Pages compiles into this section on every
+    push. Adding an entry means adding one file; nothing below is edited by
+    hand.
+
+    Ordering is by file name. Because every name starts YYYY-MM-DD, sorting
+    the paths sorts the dates and reversing puts the newest first. The date
+    printed above each entry is sliced back out of that same file name, so
+    the Markdown itself never has to carry one.
+  -->
   <section id="log">
     <h2>Research Log</h2>
-    <p><!-- TODO: chronological notes on progress, dead ends, pivots — shows the research process, not just the outcome --></p>
+
+    {%- assign entries = site.logs | sort: "path" | reverse -%}
+
+    {%- for entry in entries limit: 3 -%}
+      {%- assign stamp = entry.path | split: "/" | last | slice: 0, 10 -%}
+      <article class="log-entry">
+        <p class="log-date">{{ stamp | date: "%-d %B %Y" }}</p>
+        {{ entry.content | markdownify }}
+      </article>
+    {%- endfor -%}
+
+    {%- if entries.size > 3 -%}
+      <!-- Ships expanded with its control hidden, so with JavaScript off
+           every entry is readable and no dead button is shown. The script
+           collapses this and reveals the button on load. -->
+      <div class="log-more" id="log-more">
+        {%- for entry in entries offset: 3 -%}
+          {%- assign stamp = entry.path | split: "/" | last | slice: 0, 10 -%}
+          <article class="log-entry">
+            <p class="log-date">{{ stamp | date: "%-d %B %Y" }}</p>
+            {{ entry.content | markdownify }}
+          </article>
+        {%- endfor -%}
+      </div>
+      <button type="button" class="log-toggle" id="log-toggle"
+              aria-controls="log-more" aria-expanded="true" hidden>View all research logs ↓</button>
+    {%- endif -%}
   </section>
 
   <section id="foundations">
