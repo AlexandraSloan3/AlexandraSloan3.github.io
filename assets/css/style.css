@@ -1,9 +1,24 @@
+/* Palette — MIT's published neutrals and red, used as a colour scheme only.
+   No MIT mark, wordmark or seal appears anywhere on this site, and nothing
+   here claims or implies an affiliation.
+     MIT Red            #750014
+     Dark Gray 1        #40464c
+     Dark Gray 2        #212326
+     Dark Silver Gray   #626a73
+     Light Silver Gray  #b8c2cc
+     Light Gray 1       #f2f4f8
+     Light Gray 2       #dde1e6                          brand.mit.edu/color */
 :root {
-  --ink: #1a1a1a;
-  --muted: #666;
-  --line: #e0e0e0;
-  --accent: #8b2f2f;
-  --bg: #fdfcfb;
+  --ink: #212326;
+  --muted: #626a73;
+  --line: #b8c2cc;   /* a step darker than --bg, or the rules vanish */
+  --accent: #750014;
+  --bg: #dde1e6;
+
+  /* Component triples, so the drawn layers can pick their own alphas. */
+  --accent-rgb: 117, 0, 20;
+  --mesh-rgb: 64, 70, 76;
+  --card-rgb: 242, 244, 248;
 }
 
 * { box-sizing: border-box; }
@@ -157,44 +172,46 @@ section:not(:last-child)::after {
   bottom: -3.5px;
   height: 6px;
   background:
-    radial-gradient(circle 2.5px at 2.5px 50%, rgba(26, 26, 26, 0.22) 98%, transparent 100%) no-repeat,
-    radial-gradient(circle 2.5px at calc(100% - 2.5px) 50%, rgba(26, 26, 26, 0.22) 98%, transparent 100%) no-repeat,
+    radial-gradient(circle 2.5px at 2.5px 50%, rgba(var(--mesh-rgb), 0.22) 98%, transparent 100%) no-repeat,
+    radial-gradient(circle 2.5px at calc(100% - 2.5px) 50%, rgba(var(--mesh-rgb), 0.22) 98%, transparent 100%) no-repeat,
     linear-gradient(var(--line), var(--line)) no-repeat center / 100% 1px;
   /* Revealed by clipping rather than scaling, so the end dots never squash. */
   clip-path: inset(0 calc((1 - var(--d, 1)) * 100%) 0 0);
 }
 
 /* --- Side fill graphic -------------------------------------------------
-   Large, quiet, and cropped by the right edge of the viewport on purpose.
-   Left edge is pinned just outside the 720px content column, so the panel
-   can be wide and still never sit behind body text at any window size;
-   the right edge deliberately runs past the viewport and is cropped. */
-/* Width must be stated explicitly: an SVG carries an intrinsic aspect ratio,
+   Spans from inside the text column all the way to the right edge of the
+   viewport. Its left side dissolves into the page and its right side runs
+   flush to the screen edge, so it reads as the page's own background rather
+   than as a panel pasted on top of it.
+
+   Width must be stated explicitly: an SVG carries an intrinsic aspect ratio,
    so with width:auto the browser derives it from the height and ignores
-   `right` entirely. Because preserveAspectRatio is `slice`, a wider box also
-   scales the drawing up, which is what makes the pattern itself larger. */
+   `right` entirely. Because preserveAspectRatio is `slice`, the box width
+   would also set the drawing's scale — but the 1600-unit canvas is wide
+   enough that at any ordinary window the scale stays pinned to the height
+   (900/1000 = 0.9) and the mesh renders at a constant density, with a wider
+   window simply revealing more of it. */
 #side-graphic {
   position: fixed;
   top: 0;
-  /* Widening happens by moving this edge left, not by growing the box:
-     because preserveAspectRatio is `slice`, the box width sets the drawing's
-     scale, so changing it would alter the mesh density. Keeping width fixed
-     and shifting `left` simply reveals more of the drawing at the same size.
-     The graphic sits below the content layer, and the mask has faded it to
-     nothing well before the text column, so the overlap is never visible. */
-  left: calc(50% + 300px);
-  /* Capped at 0.9 x the 780-unit canvas. Staying at or below that keeps the
-     `slice` scale pinned to the height (900/1000 = 0.9), so the mesh renders
-     at a constant density at every window width instead of growing with it. */
-  width: min(46vw, 702px);
+  /* left + width = (50% - 40px) + (50vw + 40px) = 100vw exactly, so the
+     right edge lands on the viewport edge at every window size — nothing
+     is ever left over on the right. */
+  left: calc(50% - 300px);
+  width: calc(50vw + 300px);
   height: 100vh;
   z-index: 0;
   pointer-events: none;
   will-change: transform;
-  /* Left edge dissolves into the page. Measured against the element box, so
-     it stays the same on-screen distance no matter how the drawing scales. */
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 14%, #000 30%);
-  mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 14%, #000 30%);
+  /* Left edge dissolves into the page. Stops are in pixels rather than
+     percentages so the fade always ends the same distance from the content
+     column whatever the window width: it reaches full strength 880px in,
+     at 50% + 580px, clear of the cards' right edge — while its long faint
+     head runs on underneath them, which is what the translucent cards are
+     there to show. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0px, rgba(0, 0, 0, 0.20) 400px, rgba(0, 0, 0, 0.60) 660px, #000 880px);
+  mask-image: linear-gradient(to right, transparent 0px, rgba(0, 0, 0, 0.20) 400px, rgba(0, 0, 0, 0.60) 660px, #000 880px);
 }
 
 #side-graphic path,
@@ -209,42 +226,173 @@ section:not(:last-child)::after {
    only thing that responds to scroll. */
 #side-graphic .sg-edges path {
   fill: none;
-  stroke: rgba(26, 26, 26, 0.26);
+  stroke: rgba(var(--mesh-rgb), 0.26);
 }
 
 #side-graphic .sg-hull path {
   fill: none;
-  stroke: rgba(26, 26, 26, 0.16);
+  stroke: rgba(var(--mesh-rgb), 0.16);
   stroke-dasharray: 3 4;
 }
 
 #side-graphic .sg-handles rect {
   fill: var(--bg);
-  stroke: rgba(26, 26, 26, 0.28);
+  stroke: rgba(var(--mesh-rgb), 0.28);
 }
 
 /* Nodes, hollow: the resting state above the fill boundary. */
 #sg-nodes-hollow .hollow {
   fill: var(--bg);
-  stroke: rgba(26, 26, 26, 0.32);
+  stroke: rgba(var(--mesh-rgb), 0.32);
 }
 
 #sg-nodes-hollow .solid {
   fill: var(--bg);
-  stroke: rgba(26, 26, 26, 0.32);
+  stroke: rgba(var(--mesh-rgb), 0.32);
 }
 
 /* Nodes, filled: revealed from the bottom as the page is scrolled. Most go
    gray; a scattered share take the heading colour already in the palette. */
 #sg-nodes-filled .hollow,
 #sg-nodes-filled .solid {
-  fill: rgba(26, 26, 26, 0.42);
-  stroke: rgba(26, 26, 26, 0.5);
+  fill: rgba(var(--mesh-rgb), 0.42);
+  stroke: rgba(var(--mesh-rgb), 0.5);
 }
 
 #sg-nodes-filled .accent {
-  fill: rgba(139, 47, 47, 0.62);
-  stroke: rgba(139, 47, 47, 0.72);
+  fill: rgba(var(--accent-rgb), 0.62);
+  stroke: rgba(var(--accent-rgb), 0.72);
+}
+
+/* =========================================================================
+   Floating section cards
+   -------------------------------------------------------------------------
+   Every content section becomes its own raised card, lifted off the mesh
+   background by a soft shadow, and each one rises into place as it enters
+   the viewport. The section elements, their ids and the anchor links are
+   untouched — this is styling and an entrance transition on what is
+   already there.
+   ========================================================================= */
+
+main {
+  /* The cards are the layout now, so the column is set by how large they
+     should be rather than by a comfortable text measure — the measure is
+     restored by their generous side padding. */
+  max-width: 1060px;
+  padding: 2.5rem 2rem 6rem;
+}
+
+main > section {
+  /* Roughly two cards to a screen: tall enough that the page reads as a
+     stack of panels rather than a document, short enough that the second
+     one is always visibly on its way in. */
+  min-height: 42vh;
+  padding: 3rem 3.25rem;
+  margin-bottom: 4rem;
+  border-radius: 14px;
+  /* Translucent, so the mesh keeps running underneath the page instead of
+     stopping at the card edge. The blur is what keeps body text crisp over
+     a busy background. */
+  background: rgba(var(--card-rgb), 0.68);
+  -webkit-backdrop-filter: blur(9px) saturate(1.04);
+  backdrop-filter: blur(9px) saturate(1.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 1px 2px rgba(var(--mesh-rgb), 0.03),
+    0 14px 40px rgba(var(--mesh-rgb), 0.07);
+  transition:
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+}
+
+/* Where the backdrop filter is unavailable the glass would read as a
+   grey wash over the mesh, so those browsers get an opaque card instead. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  main > section {
+    background: rgba(var(--card-rgb), 0.94);
+  }
+}
+
+main > section:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Ragged edges -------------------------------------------------------
+   Each card gets its own width and its own indent, so neither the left nor
+   the right edge of the stack lines up into a column. The values are hand
+   set rather than generated, because the point is that they look chosen,
+   not cycled. Percentages are of the column, so the raggedness scales with
+   the window instead of collapsing at narrow widths. */
+main > section:nth-child(1)  { margin-left: 0;   margin-right: 7%; }
+main > section:nth-child(2)  { margin-left: 11%; margin-right: 0;  }
+main > section:nth-child(3)  { margin-left: 3%;  margin-right: 10%; }
+main > section:nth-child(4)  { margin-left: 14%; margin-right: 1%; }
+main > section:nth-child(5)  { margin-left: 1%;  margin-right: 13%; }
+main > section:nth-child(6)  { margin-left: 8%;  margin-right: 3%; }
+main > section:nth-child(7)  { margin-left: 0;   margin-right: 9%; }
+main > section:nth-child(8)  { margin-left: 13%; margin-right: 2%; }
+main > section:nth-child(9)  { margin-left: 5%;  margin-right: 11%; }
+main > section:nth-child(10) { margin-left: 10%; margin-right: 0;  }
+
+/* A little variation in height as well, so the stack has a skyline rather
+   than a repeating beat. */
+main > section:nth-child(3n)     { min-height: 38vh; }
+main > section:nth-child(4n + 2) { min-height: 47vh; }
+
+/* The card's padding is the whole margin now: the first and last children
+   give up their own, so every card is optically even top and bottom. */
+main > section > :first-child {
+  margin-top: 0;
+}
+
+main > section > :last-child {
+  margin-bottom: 0;
+}
+
+/* The dividers belonged to a page of stacked text. Cards carry their own
+   separation, so the drawn line is retired — but the rule that reserved its
+   height stays neutral, and --d keeps being set harmlessly by the script. */
+main > section:not(:last-child)::after {
+  content: none;
+}
+
+main > section:not(:last-child) {
+  border-bottom: 0;
+}
+
+main > section:hover {
+  transform: translateY(-5px);
+  background: rgba(var(--card-rgb), 0.80);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 2px rgba(var(--mesh-rgb), 0.03),
+    0 24px 54px rgba(var(--mesh-rgb), 0.1);
+}
+
+/* --- Entrance ----------------------------------------------------------
+   The resting state is the finished card. Only when the script has
+   confirmed it can drive the transition does it add .js-reveal to <html>,
+   which arms the hidden state — so with JavaScript off, every section is
+   simply visible. */
+.js-reveal main > section {
+  opacity: 0;
+  transform: translateY(42px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.35s ease,
+    background-color 0.35s ease;
+  will-change: opacity, transform;
+}
+
+.js-reveal main > section.is-in {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+.js-reveal main > section.is-in:hover {
+  transform: translateY(-4px);
 }
 
 /* --- Background particle field ----------------------------------------- */
@@ -264,6 +412,34 @@ section:not(:last-child)::after {
   section h2 {
     transform: translateY(calc((1 - var(--p, 1)) * 5px));
   }
+
+  /* On a phone the ragged indents would eat the reading width, so the
+     stack squares up and the cards shrink back to document proportions. */
+  main {
+    padding: 1rem 1rem 3rem;
+  }
+
+  main > section,
+  main > section:nth-child(n) {
+    min-height: 0;
+    padding: 1.6rem 1.4rem;
+    margin: 0 0 1.15rem;
+    border-radius: 10px;
+    background: rgba(var(--card-rgb), 0.84);
+  }
+
+  main > section:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Hover lift is a pointer affordance; on touch it just looks like drift. */
+  main > section:hover,
+  .js-reveal main > section.is-in:hover {
+    transform: none;
+    box-shadow:
+      0 1px 2px rgba(var(--mesh-rgb), 0.04),
+      0 8px 24px rgba(var(--mesh-rgb), 0.08);
+  }
 }
 
 /* --- Reduced motion -----------------------------------------------------
@@ -280,6 +456,20 @@ section:not(:last-child)::after {
 
   section:not(:last-child)::after {
     clip-path: none;
+  }
+
+  /* Cards keep their elevation; they simply do not travel to get it. */
+  .js-reveal main > section,
+  .js-reveal main > section.is-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  main > section:hover,
+  .js-reveal main > section.is-in:hover {
+    transform: none;
   }
 
   #side-graphic {
