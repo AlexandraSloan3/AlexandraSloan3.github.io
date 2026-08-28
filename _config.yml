@@ -1,0 +1,26 @@
+# GitHub Pages builds this site with Jekyll. This file exists only to teach it
+# about the _logs collection — everything else on the site is passed through
+# exactly as before.
+#
+# To publish a research log entry, add one file to _logs/ named
+# YYYY-MM-DD-something.md, starting with two `---` lines and nothing between
+# them, then commit. The date is read from the file name; the site rebuilds
+# itself and puts the newest entry at the top.
+
+collections:
+  logs:
+    # The entries are rendered inside the Research Log section of index.html,
+    # so Jekyll should not also publish a separate page for each one.
+    output: false
+
+# Kept out of the published site. Naming `exclude` replaces Jekyll's built-in
+# list, so its defaults are repeated here rather than lost.
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
