@@ -1,13 +1,3 @@
-/* Palette — MIT's published neutrals and red, used as a colour scheme only.
-   No MIT mark, wordmark or seal appears anywhere on this site, and nothing
-   here claims or implies an affiliation.
-     MIT Red            #750014
-     Dark Gray 1        #40464c
-     Dark Gray 2        #212326
-     Dark Silver Gray   #626a73
-     Light Silver Gray  #b8c2cc
-     Light Gray 1       #f2f4f8
-     Light Gray 2       #dde1e6                          brand.mit.edu/color */
 :root {
   --ink: #212326;
   --muted: #626a73;
@@ -117,6 +107,61 @@ footer {
 
 a {
   color: var(--accent);
+}
+
+/* --- Research Log ------------------------------------------------------
+   Entries come from the Markdown files in _logs/. Nothing here introduces a
+   card, shadow, gradient, typeface or colour that the site did not already
+   have: the date uses --accent, the toggle is styled as the plain text link
+   it behaves like, and entries are separated by space alone. */
+.log-entry + .log-entry,
+.log-more .log-entry:first-child {
+  margin-top: 2.25rem;
+}
+
+.log-date {
+  margin: 0 0 0.4rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+}
+
+/* The entry's own last paragraph should not add space on top of the gap
+   that already separates one entry from the next. */
+.log-entry > :last-child {
+  margin-bottom: 0;
+}
+
+/* Height is animated from the script, which measures the content; the rule
+   here only supplies the clipping that makes a partial height read as a
+   reveal rather than as overflowing text. */
+.log-more {
+  overflow: hidden;
+}
+
+/* Stated before the display rule below, and repeated with the attribute, so
+   that `display: inline-block` cannot outrank the browser's own
+   `[hidden] { display: none }` — which is what keeps the control out of the
+   page until the script has taken charge of it. */
+.log-toggle[hidden] {
+  display: none;
+}
+
+.log-toggle {
+  display: inline-block;
+  margin-top: 2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.log-toggle:hover,
+.log-toggle:focus-visible {
+  text-decoration: underline;
 }
 
 /* =========================================================================
