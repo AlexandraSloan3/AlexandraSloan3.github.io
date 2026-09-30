@@ -2882,14 +2882,19 @@
     <h2>Foundations</h2>
 
     <h3>Learning Approach</h3>
-    <p>Foundations are studied just-in-time and literature-driven: rather than completing each subject exhaustively before starting research, I work directly from the primary literature — beginning with the original KAN paper and extending outward to related theoretical work — identifying each unfamiliar concept as it appears and studying only the material needed to understand it rigorously. Core concepts (e.g., neural network fundamentals) are studied in depth; peripheral concepts are studied to the depth the literature requires. This keeps preparation tightly scoped to what the research actually uses, rather than following a fixed curriculum end-to-end.</p>
+    <p>Preparation proceeds in layers, each resting on the one beneath it. It began with mathematics — linear algebra, calculus, and probability — studied from the references below before any machine learning. Deep learning came next, through <em>Dive into Deep Learning</em>, followed by a second, slower pass through neural network fundamentals, in which each result is derived again from first principles and then implemented. Throughout, the mathematics is studied as mathematics: definitions, statements, and derivations taken on their own terms, not merely as a toolkit for the code.</p>
 
-    <p>Primary references drawn on as needed: MIT 18.06 Linear Algebra, <em>Dive into Deep Learning</em> (Zhang, Lipton, Li &amp; Smola — the online resource for a Stanford course I completed), Thomas' Calculus / MIT 18.01–18.02, and MIT 6.041/18.05 Probability.</p>
+    <p>The method is the same at every layer: a concept counts as understood only when it can be stated precisely and built by hand. Each notebook section states the key equations exactly, implements them from scratch in PyTorch, and checks the result against an independent reference — hand-written backpropagation against autograd, for example. Abstractions come only after the mechanism beneath them has been built: raw tensors first, then manual gradients, then <code>nn.Module</code>.</p>
 
-    <p>This preparation is tracked in its own repository ahead of the research itself: prerequisite concepts, the mathematical formulas behind them, and weekly computational notebooks working through both. It precedes the KAN project rather than being part of its output.</p>
+    <p>When the work outgrows the tools at hand, I build or adapt my own — <a href="https://github.com/AlexandraSloan3/kaonotes" target="_blank">KaoNotes</a>, a LaTeX template adapted for writing mathematical notes, is one example. Tools and problems develop together: a question determines what tool is needed, and a better tool in turn makes new questions practical to pursue. Each tool is built to outlast the problem that prompted it.</p>
+
+    <p>The research stage is literature-driven. Starting from the original KAN paper and extending outward to related theoretical work, each unfamiliar concept is identified as it appears and studied to the depth the literature demands — fully where it is central, only as far as needed where it is peripheral.</p>
+
+    <p>Primary references drawn on as needed: MIT 18.06 Linear Algebra, <em>Dive into Deep Learning</em> (Zhang, Lipton, Li &amp; Smola; an open textbook adopted in university courses, including at Stanford), Thomas' Calculus / MIT 18.01–18.02, and MIT 6.041/18.05 Probability.</p>
+
+    <p>This preparation lives in its own repository, separate from the research itself: notebooks pairing each formula with a self-written implementation, alongside notes on concepts met in the literature. It precedes the KAN project and is not part of its output. Its purpose is not only to answer the questions in front of me, but to be ready for the questions that come next.</p>
     <a href="https://github.com/AlexandraSloan3/kan-research-prep" target="_blank">View prep notebooks →</a>
   </section>
-
 </main>
 
 <footer>
